@@ -21,12 +21,6 @@ jobs:
           github_user_name: ${{ github.repository_owner }}
           github_token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Criar pasta output
-        run: mkdir -p output
-
-      - name: Mover SVG para output
-        run: mv github-contribution-grid-snake.svg output/
-
       - name: Publicar gráfico na branch output
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
