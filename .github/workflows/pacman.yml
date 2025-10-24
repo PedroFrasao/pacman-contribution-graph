@@ -1,28 +1,36 @@
-name: Generate Pacman Contribution Graph
+name: Gerar Gráfico de Contribuição do Pac-Man
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * *"  # Executa diariamente à meia-noite
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Permite que a Action faça commits
+
     steps:
-      - name: Checkout
+      - name: Fazer checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Generate Pacman SVG
-        uses: abozanona/pacman-contribution-graph@output
+      - name: Gerar gráfico de contribuição
+        uses: abozanona/pacman-contribution-graph@main
         with:
           github_user_name: ${{ github.repository_owner }}
 
-      - name: Commit and push output
+      - name: Criar diretório de saída
+        run: mkdir -p output
+
+      - name: Mover gráfico gerado para a pasta de saída
+        run: mv pacman-contribution-graph.svg output/
+
+      - name: Commit e push do gráfico gerado
         run: |
-          mkdir -p output
-          mv pacman-contribution-graph.svg output/
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
-          git commit -m "Generated Pacman graph"
+          git add output/pacman-contribution-graph.svg
+          git commit -m "Gerar gráfico de contribuição do Pac-Man"
           git push
+
