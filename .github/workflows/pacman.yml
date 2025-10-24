@@ -11,10 +11,11 @@ jobs:
       contents: write  # Permite que a Action faça commits
 
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
 
       - name: Gerar Gráfico de Contribuição Pac-Man
         uses: AndreRuperto/pacman-contribution-graph@main
@@ -23,7 +24,17 @@ jobs:
           github_token: ${{ secrets.PAT_TOKEN }}
           theme: github-dark
 
-      - name: Publicar pacman-contribution-graph.svg na branch output
+      - name: Instalar dependências para conversão
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin imagemagick
+
+      - name: Converter SVG animado em GIF
+        run: |
+          mkdir -p dist
+          convert -density 300 dist/pacman-contribution-graph-dark.svg -layers Optimize dist/pacman.gif
+
+      - name: Publicar SVG e GIF na branch output
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
           target_branch: output
